@@ -21,6 +21,18 @@ Optionally you could publish the config file using this command.
 php artisan vendor:publish --provider="Dive\NovaTranslationEditor\ToolServiceProvider" --tag="config"
 ```
 
+Register the tool in NovaServiceProvider
+
+```php
+public function tools()
+{
+    return [
+        new NovaTranslationEditor(),
+    ];
+}
+```
+
+
 ## Publish
 
 Publish the translations via the nova tool or via command line:
