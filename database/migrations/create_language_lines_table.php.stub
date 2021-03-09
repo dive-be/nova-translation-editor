@@ -5,18 +5,13 @@ use Illuminate\Database\Migrations\Migration;
 
 class CreateLanguageLinesTable extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
     public function up()
     {
-        Schema::create('language_lines', function (Blueprint $table) {
-            $table->bigIncrements('id');
+        Schema::create('language_lines', static function (Blueprint $table) {
+            $table->id();
             $table->string('group');
             $table->string('key');
-            $table->string('locale', 2)->default('en');
+            $table->char('locale', 2);
             $table->text('text');
             $table->timestamp('published_at')->nullable();
             $table->timestamps();
@@ -25,11 +20,6 @@ class CreateLanguageLinesTable extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
         Schema::drop('language_lines');
