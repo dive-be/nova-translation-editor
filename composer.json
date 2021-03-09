@@ -1,0 +1,42 @@
+{
+    "name": "dive-be/nova-translation-editor",
+    "description": "A Laravel Nova tool for editing your translation strings.",
+    "keywords": [
+        "dive",
+        "translations",
+        "i18n",
+        "localization",
+        "laravel",
+        "nova"
+    ],
+    "homepage": "https://github.com/dive-be/nova-translation-editor",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Michiel Vancoillie",
+            "email": "michiel@dive.be",
+            "homepage": "https://dive.be",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=7.4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Dive\\NovaTranslationEditor\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Dive\\NovaTranslationEditor\\ToolServiceProvider"
+            ]
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
