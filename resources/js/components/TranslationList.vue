@@ -132,6 +132,13 @@ export default {
             previousSearch: '',
         };
     },
+
+    metaInfo() {
+        return {
+            title: 'Translation Editor',
+        }
+    },
+
     methods: {
         getTranslationGroups() {
             axios
@@ -202,7 +209,7 @@ export default {
         },
         deleteTranslation(translation) {
             axios
-            .delete(`/nova-vendor/nova-translation-editor` + translation.id, {})
+            .delete(`/nova-vendor/nova-translation-editor/` + translation.id, {})
             .then(response => {
                 this.listTranslations();
                 Nova.success('Translation deleted');
