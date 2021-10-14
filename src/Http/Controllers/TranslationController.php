@@ -46,8 +46,8 @@ class TranslationController
             ->sortBy(fn ($translation) => $translation->unique_id);
 
         if ($search) {
-            $translations = $translations->filter(fn ($translation) =>
-                stripos($translation->text, $search) !== false || stripos($translation->key, $search) !== false
+            $translations = $translations->filter(
+                fn ($translation) => stripos($translation->text, $search) !== false || stripos($translation->key, $search) !== false
             );
         }
 

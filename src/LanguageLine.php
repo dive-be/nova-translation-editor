@@ -6,8 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 
 /**
- * @property bool $customized
- * @property bool $published
+ * @property bool   $customized
+ * @property bool   $published
  * @property string $unique_id
  */
 class LanguageLine extends Model
