@@ -2,21 +2,37 @@
 
 namespace Dive\NovaTranslationEditor;
 
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 
+/**
+ * @property bool $customized
+ * @property bool $published
+ * @property string $unique_id
+ */
 class LanguageLine extends Model
 {
     public $guarded = ['id'];
 
+    protected $appends = [
+        'customized',
+        'published',
+    ];
+
     protected $casts = ['published_at' => 'date'];
 
-    public function getIdentifier() {
-        return $this->group.'-'.$this->key;
+    public function getCustomizedAttribute(): bool
+    {
+        return $this->exists;
     }
 
-    public function toArray()
+    public function getPublishedAttribute(): bool
     {
-        return array_merge(parent::toArray(), ['customized' => $this->exists, 'published' => $this->published_at instanceof Carbon]);
+        return is_string(Arr::get($this->attributes, 'published_at'));
+    }
+
+    public function getUniqueIdAttribute(): string
+    {
+        return $this->group.'-'.$this->key;
     }
 }
