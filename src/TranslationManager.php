@@ -100,7 +100,7 @@ class TranslationManager
         DB::table((new LanguageLine())->getTable())->update(['published_at' => Carbon::now()]);
     }
 
-    private static function unDotArray(array $dottedArray): array
+    private static function unDotArray(Collection $dottedArray): array
     {
         $array = [];
 
