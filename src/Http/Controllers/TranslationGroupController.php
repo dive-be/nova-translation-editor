@@ -3,11 +3,11 @@
 namespace Dive\NovaTranslationEditor\Http\Controllers;
 
 use Dive\NovaTranslationEditor\TranslationManager;
-use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 
-class TranslationGroupIndexController
+class TranslationGroupController
 {
-    public function __invoke(Request $request)
+    public function index(): JsonResponse
     {
         return response()->json(TranslationManager::getFiles());
     }

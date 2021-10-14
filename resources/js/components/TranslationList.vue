@@ -135,7 +135,7 @@ export default {
     methods: {
         getTranslationGroups() {
             axios
-            .get(`/nova-vendor/nova-translation-editor/translations/groups`, {})
+            .get(`/nova-vendor/nova-translation-editor/groups`, {})
             .then(response => {
                 this.initialLoading = false;
                 this.translationGroups = response.data;
@@ -156,7 +156,7 @@ export default {
                 };
 
                 axios
-                .get(`/nova-vendor/nova-translation-editor/translations/`, {
+                .get(`/nova-vendor/nova-translation-editor`, {
                     params: params,
                 })
                 .then(response => {
@@ -181,7 +181,7 @@ export default {
         }, 200),
         saveTranslation(translation, event) {
             axios
-            .post(`/nova-vendor/nova-translation-editor/translations/`, {
+            .put(`/nova-vendor/nova-translation-editor`, {
                 id: translation.id,
                 group: translation.group,
                 key: translation.key,
@@ -202,7 +202,7 @@ export default {
         },
         deleteTranslation(translation) {
             axios
-            .delete(`/nova-vendor/nova-translation-editor/translations/` + translation.id, {})
+            .delete(`/nova-vendor/nova-translation-editor` + translation.id, {})
             .then(response => {
                 this.listTranslations();
                 Nova.success('Translation deleted');
@@ -214,7 +214,7 @@ export default {
         },
         publishTranslations() {
             axios
-            .post(`/nova-vendor/nova-translation-editor/translations/publish`, {})
+            .post(`/nova-vendor/nova-translation-editor/publish`, {})
             .then(response => {
                 this.listTranslations();
                 Nova.success('Published all translations');

@@ -3,11 +3,10 @@
 namespace Dive\NovaTranslationEditor\Http\Controllers;
 
 use Dive\NovaTranslationEditor\TranslationManager;
-use Illuminate\Http\Request;
 
-class TranslationPublishController
+class PublishTranslationsController
 {
-    public function __invoke(Request $request)
+    public function __invoke()
     {
         TranslationManager::publish();
     }
