@@ -2,65 +2,92 @@
 
 namespace Dive\NovaTranslationEditor;
 
-use Dive\NovaTranslationEditor\Console\Commands\PublishCommand;
+use Dive\NovaTranslationEditor\Commands\PublishCommand;
 use Dive\NovaTranslationEditor\Http\Middleware\Authorize;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Route;
+use Illuminate\Routing\Router;
+use Illuminate\Support\Collection;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Str;
-use Laravel\Nova\Events\ServingNova;
 use Laravel\Nova\Nova;
 
 class ToolServiceProvider extends ServiceProvider
 {
+    public function boot()
+    {
+        if ($this->app->runningInConsole()) {
+            $this->registerCommands();
+            $this->registerConfig();
+            $this->registerMigration();
+        }
+
+        $this->provideScriptData();
+        $this->registerRoutes();
+        $this->registerViews();
+    }
+
     public function register()
     {
-        parent::register();
-
         $this->mergeConfigFrom(__DIR__.'/../config/nova-translation-editor.php', 'nova-translation-editor');
     }
 
-    public function boot()
+    protected function routes(Router $router)
     {
-        if ($this->app->runningInConsole() && ! Str::contains($this->app->version(), 'Lumen')) {
-            $this->commands([
-                PublishCommand::class,
-            ]);
-
-            $this->publishes([
-                __DIR__.'/../config/nova-translation-editor.php' => config_path('nova-translation-editor.php'),
-            ], 'config');
-
-            if (! class_exists('CreateLanguageLinesTable')) {
-                $timestamp = date('Y_m_d_His', time());
-
-                $this->publishes([
-                    __DIR__.'/../database/migrations/create_language_lines_table.php.stub' => database_path('migrations/'.$timestamp.'_create_language_lines_table.php'),
-                ], 'migrations');
-            }
+        if (! $this->app->routesAreCached()) {
+            $router->middleware(['nova', Authorize::class])
+                ->prefix('nova-vendor/nova-translation-editor')
+                ->group(__DIR__.'/../routes/api.php');
         }
+    }
 
-        $this->loadViewsFrom(__DIR__.'/../resources/views', 'nova-translation-editor');
-
-        $this->app->booted(function () {
-            $this->routes();
-        });
-
-        Nova::serving(function (ServingNova $event) {
+    private function provideScriptData()
+    {
+        Nova::serving(function () {
             Nova::provideToScript([
-                'tool' => Config::get('nova-translation-editor'),
+                'tool' => $this->app['config']->get('nova-translation-editor'),
             ]);
         });
     }
 
-    protected function routes()
+    private function registerCommands()
     {
-        if ($this->app->routesAreCached()) {
-            return;
-        }
+        $this->commands([
+            PublishCommand::class,
+        ]);
+    }
 
-        Route::middleware(['nova', Authorize::class])
-                ->prefix('nova-vendor/nova-translation-editor')
-                ->group(__DIR__.'/../routes/api.php');
+    private function registerConfig()
+    {
+        $config = 'nova-translation-editor.php';
+
+        $this->publishes([
+            __DIR__."/../config/{$config}" => $this->app->configPath($config),
+        ], 'config');
+    }
+
+    private function registerMigration()
+    {
+        $migration = 'create_language_lines_table.php';
+        $doesntExist = Collection::make(glob($this->app->databasePath('migrations/*.php')))
+            ->every(fn ($filename) => ! str_ends_with($filename, $migration));
+
+        if ($doesntExist) {
+            $timestamp = date('Y_m_d_His', time());
+            $stub = __DIR__."/../database/migrations/{$migration}.stub";
+
+            $this->publishes([
+                $stub => $this->app->databasePath("migrations/{$timestamp}_{$migration}"),
+            ], 'migrations');
+        }
+    }
+
+    private function registerRoutes()
+    {
+        $this->app->booted(function () {
+            $this->routes($this->app['router']);
+        });
+    }
+
+    private function registerViews()
+    {
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'nova-translation-editor');
     }
 }
