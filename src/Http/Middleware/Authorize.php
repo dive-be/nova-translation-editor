@@ -4,19 +4,25 @@ namespace Dive\NovaTranslationEditor\Http\Middleware;
 
 use Closure;
 use Dive\NovaTranslationEditor\NovaTranslationEditor;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Laravel\Nova\Nova;
 
 class Authorize
 {
     public function handle(Request $request, Closure $next)
     {
-        $tool = collect(Nova::registeredTools())->first([$this, 'matchesTool']);
+        $tool = Arr::first(Nova::registeredTools(), $this->matchesTool(...));
 
-        return $tool?->authorize($request) ? $next($request) : abort(403);
+        if (! $tool?->authorize($request)) {
+            throw new AuthorizationException();
+        }
+
+        return $next($request);
     }
 
-    public function matchesTool($tool): bool
+    private function matchesTool($tool): bool
     {
         return $tool instanceof NovaTranslationEditor;
     }

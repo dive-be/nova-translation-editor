@@ -9,6 +9,8 @@ class TranslationGroupController
 {
     public function index(): JsonResponse
     {
-        return response()->json(TranslationManager::getFiles());
+        return response()->json(
+            TranslationManager::getFiles()
+        );
     }
 }

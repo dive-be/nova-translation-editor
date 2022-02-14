@@ -8,22 +8,18 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Lang;
-use SplFileInfo;
 
 class TranslationManager
 {
-    /**
-     * Fetch language files for given locale.
-     */
     public static function getFiles(?string $locale = null): Collection
     {
         $locale ??= config('nova-translation-editor.default_locale');
         $excludeFiles = collect(config('nova-translation-editor.exclude', []));
 
         return collect(File::allFiles(lang_path($locale)))
-            ->map(fn (SplFileInfo $file) => ltrim($file->getRelativePath() . '/' . $file->getFilenameWithoutExtension(), '/'))
+            ->map(static fn ($file) => ltrim($file->getRelativePath() . '/' . $file->getFilenameWithoutExtension(), '/'))
             // Filter excluded files
-            ->filter(fn ($file) => ! $excludeFiles->contains($file))
+            ->filter(static fn ($file) => ! $excludeFiles->contains($file))
             ->flatten();
     }
 
@@ -34,13 +30,13 @@ class TranslationManager
         // Fetch all translations for a given locale
         return $files
             // Read contents of every fetched file
-            ->mapWithKeys(fn ($file) => [$file => Lang::get($file, [], $locale)])
+            ->mapWithKeys(static fn ($file) => [$file => Lang::get($file, [], $locale)])
             // File must contain a non empty array with translations
-            ->filter(fn ($translation) => is_array($translation) && ! empty($translation))
+            ->filter(static fn ($trans) => is_array($trans) && ! empty($trans))
             // Convert to dot notation
-            ->map(fn ($translation, $key) => collect(Arr::dot($translation)))
+            ->map(static fn ($trans, $key) => collect(Arr::dot($trans)))
             // Map to models
-            ->flatMap(function ($translations, $file) use ($withValues) {
+            ->flatMap(static function ($translations, $file) use ($withValues) {
                 return $translations->mapWithKeys(function ($value, $key) use ($file, $withValues) {
                     return [$file . '.' . $key => new LanguageLine([
                         'group' => $file,
@@ -58,28 +54,28 @@ class TranslationManager
         // Fetch default locale translations without values
         $defaultFileTranslations = self::getFileLanguageLines(config('nova-translation-editor.default_locale'), false);
         $defaultFileTranslationsKeys = $defaultFileTranslations
-            ->map(fn ($translation) => $translation->unique_id)
+            ->map(static fn ($trans) => $trans->unique_id)
             ->toArray();
 
         foreach (config('nova-translation-editor.supported_locales') as $locale) {
             // Merge with current locale translations & exclude the keys that don't exist in the default locales
             $fileTranslations = self::getFileLanguageLines($locale)
                 ->concat($defaultFileTranslations)
-                ->unique(fn ($translation) => $translation->unique_id)
-                ->filter(fn ($translation) => in_array($translation->unique_id, $defaultFileTranslationsKeys));
+                ->unique(static fn ($trans) => $trans->unique_id)
+                ->filter(static fn ($trans) => in_array($trans->unique_id, $defaultFileTranslationsKeys));
 
             // Merge with DB translations
             $translationGroups = LanguageLine::where('locale', $locale)
                 ->get()
-                ->filter(fn ($translation) => in_array($translation->unique_id, $defaultFileTranslationsKeys))
+                ->filter(static fn ($trans) => in_array($trans->unique_id, $defaultFileTranslationsKeys))
                 ->concat($fileTranslations)
-                ->unique(fn ($translation) => $translation->unique_id)
-                ->sortBy(fn ($translation) => $translation->unique_id)
+                ->unique(static fn ($trans) => $trans->unique_id)
+                ->sortBy(static fn ($trans) => $trans->unique_id)
                 // Only filter empty values for non-default locale
-                ->filter(fn ($translation) => ($locale == config('nova-translation-editor.default_locale')) ?: $translation->text)
-                ->map(fn ($translation) => $translation->only(['group', 'key', 'text']))
+                ->filter(static fn ($trans) => ($locale == config('nova-translation-editor.default_locale')) ?: $trans->text)
+                ->map(static fn ($trans) => $trans->only(['group', 'key', 'text']))
                 ->groupBy('group')
-                ->map(fn ($group) => $group->mapWithKeys(fn ($translation) => [$translation['key'] => $translation['text']]));
+                ->map(static fn ($group) => $group->mapWithKeys(fn ($trans) => [$trans['key'] => $trans['text']]));
 
             foreach ($translationGroups as $group => $translations) {
                 $translations = self::unDotArray($translations);

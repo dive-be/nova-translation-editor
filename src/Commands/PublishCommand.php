@@ -11,8 +11,12 @@ class PublishCommand extends Command
 
     protected $description = 'Publish all translations';
 
-    public function handle()
+    public function handle(): int
     {
         TranslationManager::publish();
+
+        $this->info('📝  Translation files published!');
+
+        return self::SUCCESS;
     }
 }

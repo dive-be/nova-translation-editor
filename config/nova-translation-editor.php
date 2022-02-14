@@ -7,14 +7,14 @@ return [
     'default_locale' => 'en',
 
     /*
-     * The languages the should be translatable via nova
+     * The languages that should be translatable in Nova
      */
     'supported_locales' => [
         'en',
     ],
 
     /*
-     * Specify which files don't need to be translatable via nova
+     * Specify which files should not be translatable in Nova
      */
     'exclude' => [
         /*

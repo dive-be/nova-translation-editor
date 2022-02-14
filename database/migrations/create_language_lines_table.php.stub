@@ -1,9 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\Schema;
 
-class CreateLanguageLinesTable extends Migration
+return new class() extends Migration
 {
     public function up()
     {
@@ -24,4 +25,4 @@ class CreateLanguageLinesTable extends Migration
     {
         Schema::drop('language_lines');
     }
-}
+};
