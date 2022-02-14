@@ -1,8 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
+use Dive\NovaTranslationEditor\Http\Controllers\PublishTranslationsController;
 use Dive\NovaTranslationEditor\Http\Controllers\TranslationController;
 use Dive\NovaTranslationEditor\Http\Controllers\TranslationGroupController;
-use Dive\NovaTranslationEditor\Http\Controllers\PublishTranslationsController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [TranslationController::class, 'index']);

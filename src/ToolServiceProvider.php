@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Dive\NovaTranslationEditor;
 
@@ -26,23 +26,25 @@ class ToolServiceProvider extends ServiceProvider
 
     public function register()
     {
-        $this->mergeConfigFrom(__DIR__.'/../config/nova-translation-editor.php', 'nova-translation-editor');
+        $this->mergeConfigFrom(__DIR__ . '/../config/nova-translation-editor.php', 'nova-translation-editor');
     }
 
     protected function routes(Router $router)
     {
-        if (! $this->app->routesAreCached()) {
-            $router->middleware(['nova', Authorize::class])
-                ->prefix('nova-vendor/nova-translation-editor')
-                ->group(__DIR__.'/../routes/api.php');
+        if ($this->app->routesAreCached()) {
+            return;
         }
+
+        $router->middleware(['nova', Authorize::class])
+            ->prefix('nova-vendor/nova-translation-editor')
+            ->group(__DIR__ . '/../routes/api.php');
     }
 
     private function provideScriptData()
     {
         Nova::serving(function () {
             Nova::provideToScript([
-                'tool' => $this->app['config']->get('nova-translation-editor'),
+                'tool' => $this->app['config']['nova-translation-editor'],
             ]);
         });
     }
@@ -59,7 +61,7 @@ class ToolServiceProvider extends ServiceProvider
         $config = 'nova-translation-editor.php';
 
         $this->publishes([
-            __DIR__."/../config/{$config}" => $this->app->configPath($config),
+            __DIR__ . "/../config/{$config}" => $this->app->configPath($config),
         ], 'config');
     }
 
@@ -71,7 +73,7 @@ class ToolServiceProvider extends ServiceProvider
 
         if ($doesntExist) {
             $timestamp = date('Y_m_d_His', time());
-            $stub = __DIR__."/../database/migrations/{$migration}.stub";
+            $stub = __DIR__ . "/../database/migrations/{$migration}.stub";
 
             $this->publishes([
                 $stub => $this->app->databasePath("migrations/{$timestamp}_{$migration}"),
@@ -88,6 +90,6 @@ class ToolServiceProvider extends ServiceProvider
 
     private function registerViews()
     {
-        $this->loadViewsFrom(__DIR__.'/../resources/views', 'nova-translation-editor');
+        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'nova-translation-editor');
     }
 }

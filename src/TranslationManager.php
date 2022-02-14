@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Dive\NovaTranslationEditor;
 
@@ -21,7 +21,7 @@ class TranslationManager
         $excludeFiles = collect(config('nova-translation-editor.exclude', []));
 
         return collect(File::allFiles(lang_path($locale)))
-            ->map(fn (SplFileInfo $file) => ltrim($file->getRelativePath().'/'.$file->getFilenameWithoutExtension(), '/'))
+            ->map(fn (SplFileInfo $file) => ltrim($file->getRelativePath() . '/' . $file->getFilenameWithoutExtension(), '/'))
             // Filter excluded files
             ->filter(fn ($file) => ! $excludeFiles->contains($file))
             ->flatten();
@@ -42,7 +42,7 @@ class TranslationManager
             // Map to models
             ->flatMap(function ($translations, $file) use ($withValues) {
                 return $translations->mapWithKeys(function ($value, $key) use ($file, $withValues) {
-                    return [$file.'.'.$key => new LanguageLine([
+                    return [$file . '.' . $key => new LanguageLine([
                         'group' => $file,
                         'key' => $key,
                         'text' => $withValues ? $value : '',
@@ -85,14 +85,14 @@ class TranslationManager
                 $translations = self::unDotArray($translations);
 
                 if (preg_match('/(.*)\/[^\/]+$/', $group, $matches)) {
-                    $path = lang_path($locale.'/'.$matches[1]);
+                    $path = lang_path($locale . '/' . $matches[1]);
 
                     if (! File::isDirectory($path)) {
                         File::makeDirectory($path, 493, true);
                     }
                 }
 
-                File::put(lang_path($locale.'/'.$group.'.php'), '<?php return '.var_export($translations, true).';');
+                File::put(lang_path($locale . '/' . $group . '.php'), '<?php return ' . var_export($translations, true) . ';');
             }
         }
 

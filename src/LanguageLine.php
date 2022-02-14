@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Dive\NovaTranslationEditor;
 
@@ -33,6 +33,6 @@ class LanguageLine extends Model
 
     public function getUniqueIdAttribute(): string
     {
-        return $this->group.'-'.$this->key;
+        return $this->group . '-' . $this->key;
     }
 }

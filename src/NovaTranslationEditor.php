@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Dive\NovaTranslationEditor;
 
@@ -9,8 +9,8 @@ class NovaTranslationEditor extends Tool
 {
     public function boot()
     {
-        Nova::script('nova-translation-editor', __DIR__.'/../dist/js/tool.js');
-        Nova::style('nova-translation-editor', __DIR__.'/../dist/css/tool.css');
+        Nova::script('nova-translation-editor', __DIR__ . '/../dist/js/tool.js');
+        Nova::style('nova-translation-editor', __DIR__ . '/../dist/css/tool.css');
     }
 
     public function renderNavigation()
