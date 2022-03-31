@@ -46,8 +46,8 @@ class TranslationController
             ->sortBy(static fn ($translation) => $translation->unique_id);
 
         if ($search) {
-            $translations = $translations->filter(
-                static fn ($trans) => str_contains($trans->text, $search) || str_contains($trans->key, $search)
+            $translations = $translations->filter(static fn ($trans) =>
+                str_contains((string) $trans->text, $search) || str_contains((string) $trans->key, $search)
             );
         }
 
