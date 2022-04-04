@@ -7,6 +7,7 @@ use Dive\NovaTranslationEditor\TranslationManager;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Str;
 
 class TranslationController
 {
@@ -47,7 +48,7 @@ class TranslationController
 
         if ($search) {
             $translations = $translations->filter(static fn ($trans) =>
-                str_contains((string) $trans->text, $search) || str_contains((string) $trans->key, $search)
+                Str::contains((string) $trans->text, $search, true) || Str::contains((string) $trans->key, $search, true)
             );
         }
 
